@@ -61,6 +61,7 @@ def create_accounts():
 # LIST ALL ACCOUNTS
 ######################################################################
 
+
 @app.route("/accounts", methods=["GET"])
 def list_all_accounts():
     """
@@ -69,9 +70,7 @@ def list_all_accounts():
     app.logger.info("Request to read all Accounts")
     accounts = Account.all()
     account_list = [account.serialize() for account in accounts]
-
-
-    app.logger.info("Returning all [%s] accounts", len(account_list))    
+    app.logger.info("Returning all [%s] accounts", len(account_list))
     # return the list of accounts in json format with status.HTTP_200
     return jsonify(account_list), status.HTTP_200_OK
 
@@ -129,13 +128,8 @@ def delete_an_account(account_id):
     if account:
         account.delete()
     else:
-        abort(status.HTTP_404_NOT_FOUND, 
-            f"Account with id [{account_id}] could not be found.")
-    
+        abort(status.HTTP_404_NOT_FOUND, f"Account with id [{account_id}] could not be found.")
     return "", status.HTTP_204_NO_CONTENT
-
-
-
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
