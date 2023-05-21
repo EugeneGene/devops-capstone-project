@@ -155,11 +155,38 @@ class TestAccountService(TestCase):
 
 
     def test_update_an_account(self):
-        """This method should list all accounts in the database."""
-        input_account = self._create_accounts(1)
-        resp = self.client.get(BASE_URL)
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        """This method should update an account in the database."""
+        # Create one account 
+        input_account = AccountFactory()
+        resp = self.client.post(BASE_URL, 
+                                json=input_account.serialize())
+        
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
         data = resp.get_json()
-        self.assertEqual(len(data), 5)
+        self.assertEqual(data["name"], input_account.name)
+
+        # Update the account (Happy Path)
+        data["name"] = "Reginald Bryant"
+        resp = self.client.put(f"{BASE_URL}/{data['id']}", 
+        json=data)
+        
+        resp_update = self.client.put(
+            f"{BASE_URL}/{data['id']}", 
+            json=data
+
+        )
+        self.assertEqual(resp_update.status_code, status.HTTP_200_OK)
+        updated_account = resp_update.get_json()
+        self.assertEqual(updated_account["name"], "Reginald Bryant")
+
+        # Update a non-existant account (Sad Path)
+        resp_update = self.client.put(
+            f"{BASE_URL}/{0}", 
+            json=data
+        )
+        self.assertEqual(resp_update.status_code, status.HTTP_404_NOT_FOUND)
+
+
          
 
