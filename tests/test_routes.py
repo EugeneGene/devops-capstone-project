@@ -180,12 +180,41 @@ class TestAccountService(TestCase):
         updated_account = resp_update.get_json()
         self.assertEqual(updated_account["name"], "Reginald Bryant")
 
-        # Update a non-existant account (Sad Path)
+        # Update a non-existing  account (Sad Path)
         resp_update = self.client.put(
             f"{BASE_URL}/{0}", 
             json=data
         )
         self.assertEqual(resp_update.status_code, status.HTTP_404_NOT_FOUND)
+    
+
+    def test_delete_an_account(self):
+        """ This method will test the delete functionality"""
+
+        # Create an account to delete
+        input_account = AccountFactory()
+        resp = self.client.post(BASE_URL, 
+                                json=input_account.serialize())
+        
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        data = resp.get_json()
+        self.assertEqual(data["name"], input_account.name)
+
+        # Delete the created account (Happy Path)
+
+        resp_delete = self.client.delete(f"{BASE_URL}/{data['id']}")
+        self.assertEqual(resp_delete.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Delete a non-existing account (Sad Path) 
+        resp_delete = self.client.delete(f"{BASE_URL}/{0}")
+        self.assertEqual(resp_delete.status_code, status.HTTP_404_NOT_FOUND)
+
+
+
+
+
+
 
 
          
