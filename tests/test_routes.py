@@ -25,6 +25,8 @@ HTTPS_ENVIRON = {'wsgi.url_scheme': 'https'}
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
+
+
 class TestAccountService(TestCase):
     """Account Service Tests"""
 
@@ -131,10 +133,7 @@ class TestAccountService(TestCase):
     def test_read_an_account(self):
         """This method should read a single account"""
         input_account = self._create_accounts(1)[0]
-        resp = self.client.get(
-            f"{BASE_URL}/{input_account.id}", 
-            content_type="application/json"
-        )
+        resp = self.client.get(f"{BASE_URL}/{input_account.id}",content_type="application/json")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(data["name"], input_account.name)
@@ -142,28 +141,22 @@ class TestAccountService(TestCase):
     def test_account_not_found(self):
         """This method should attempt to read a single account 
         which isn't in the database."""
-        resp = self.client.get(
-            f"{BASE_URL}/{0}",
-            content_type="application/json"
-        )
+        resp = self.client.get(f"{BASE_URL}/{0}", content_type="application/json")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_list_all_accounts(self):
         """This method should list all accounts in the database."""
-        input_account = self._create_accounts(5)
+        _ = self._create_accounts(5)
         resp = self.client.get(BASE_URL)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 5)
 
-
     def test_update_an_account(self):
         """This method should update an account in the database."""
         # Create one account 
         input_account = AccountFactory()
-        resp = self.client.post(BASE_URL, 
-                                json=input_account.serialize())
-        
+        resp = self.client.post(BASE_URL, json=input_account.serialize())
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         data = resp.get_json()
@@ -171,34 +164,22 @@ class TestAccountService(TestCase):
 
         # Update the account (Happy Path)
         data["name"] = "Reginald Bryant"
-        resp = self.client.put(f"{BASE_URL}/{data['id']}", 
-        json=data)
-        
-        resp_update = self.client.put(
-            f"{BASE_URL}/{data['id']}", 
-            json=data
-
-        )
+        resp = self.client.put(f"{BASE_URL}/{data['id']}", json=data)
+        resp_update = self.client.put(f"{BASE_URL}/{data['id']}", json=data)
         self.assertEqual(resp_update.status_code, status.HTTP_200_OK)
         updated_account = resp_update.get_json()
         self.assertEqual(updated_account["name"], "Reginald Bryant")
 
         # Update a non-existing  account (Sad Path)
-        resp_update = self.client.put(
-            f"{BASE_URL}/{0}", 
-            json=data
-        )
-        self.assertEqual(resp_update.status_code, status.HTTP_404_NOT_FOUND)
-    
+        resp_update = self.client.put(f"{BASE_URL}/{0}", json=data)
+        self.assertEqual(resp_update.status_code, status.HTTP_404_NOT_FOUND)  
 
     def test_delete_an_account(self):
         """ This method will test the delete functionality"""
 
         # Create an account to delete
         input_account = AccountFactory()
-        resp = self.client.post(BASE_URL, 
-                                json=input_account.serialize())
-        
+        resp = self.client.post(BASE_URL, json=input_account.serialize())
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         data = resp.get_json()
@@ -238,9 +219,3 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Check for the CORS header
         self.assertEqual(response.headers.get('Access-Control-Allow-Origin'), '*')
-
-
-
-
-         
-
